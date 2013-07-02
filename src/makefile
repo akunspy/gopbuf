@@ -21,6 +21,9 @@ $(OBJS): %.o: %.cpp
 	@echo "-------->  $<"
 	@g++ -c $(CCFLAGS) $< -o $@
 
+install:
+	@cp ../bin/gopbuf /usr/bin
+	@cp ../bin/pb.go /usr/bin
 
 .PHONY : clean 
 clean:

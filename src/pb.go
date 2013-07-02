@@ -1,4 +1,4 @@
-import (
+import ( 
 	"fmt"
 	"unsafe"
 )
@@ -185,6 +185,10 @@ func (p *ProtoBuffer) AddPos(v int) {
 	}
 }
 
+func (p *ProtoBuffer) ResetPos() {
+	p.pos = 0
+}
+
 func (p *ProtoBuffer) PrintBuffer() {
 	fmt.Println("Size:", p.pos)
 	for i := 0; i < p.pos; i++ {
@@ -219,7 +223,7 @@ func (p *ProtoBuffer) ReadUInt32() uint32 {
 	return uint32(x)
 }
 
-p//int64
+//int64
 func (p *ProtoBuffer) WriteInt64(x int64) {
 	p.AddPos(Encode64(p.buf, p.pos, uint64(x)))
 }

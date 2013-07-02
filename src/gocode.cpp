@@ -68,7 +68,7 @@ void GOBuilder::Build( const FileDescriptorList *filelist,
     this->out_file_ = fopen( out_name, "w" );
 
     OutL( "package %s", CS(this->package_name_) );
-    CopyFile( "pb.go" );
+    CopyFile( "/usr/bin/pb.go" );
 
     //build message
     DescriptorList::const_iterator diter;
