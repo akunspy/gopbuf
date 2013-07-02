@@ -1,0 +1,11 @@
+package proto;
+
+message Test1 {
+    message Sub {
+        required int32 v = 1;
+    }
+
+    required int32  id = 1;
+    required Sub    sub = 2;
+    optional int32  Value = 3;
+}

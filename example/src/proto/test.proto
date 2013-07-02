@@ -1,0 +1,42 @@
+package proto;
+
+message Test {
+    enum Type {
+        Type1 = 0;
+        Type2 = 1;
+        Type3 = 2;
+        Type4 = 3;
+    }
+
+    required int32    f1 = 1;
+    required uint32   f2 = 2 [default=3];
+    required int64    f3 = 3;
+    required uint64   f4 = 4;
+    required float    f5 = 5 [default=2.8];
+    required double   f6 = 6;
+
+    optional fixed32  f7 = 7;
+    optional fixed64  f8 = 8;
+    optional sfixed32 f9 = 9;
+    optional sfixed64 f10 = 10;
+    optional sint32   f11 = 11;
+    optional sint64   f12 = 12;
+
+    required bool     f13 = 13;
+    required string   f14 = 14 [default="hello world"];
+    required bytes    f15 = 15 [default="123456"];
+    required Type     f16 = 16 [default=Type2];
+    required Sub      f17 = 17;
+
+    repeated int32    f18 = 18 [packed=true];
+    repeated Type     f19 = 19;
+    repeated Sub      f20 = 20;
+    repeated bytes    f21 = 21;
+    repeated int32    f22 = 22;
+}
+
+message Sub {
+    required int32 f1 = 1 [default=8];
+    required int32 f2 = 2;
+    optional int32 F3 = 3;
+}
