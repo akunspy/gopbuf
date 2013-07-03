@@ -40,3 +40,18 @@ message Sub {
     required int32 f2 = 2;
     optional int32 F3 = 3;
 }
+
+message MyTest {
+    message Sub {
+        required int32 f1 = 1;
+        required int32 f2 = 2;
+        optional int32 f3 = 3;
+    }
+    
+    required int32 f1 = 1;
+    required int64 f2 = 2;
+    optional string f3 = 3;
+    optional bytes f4 = 4;
+    optional Sub f5 = 5;
+    repeated int32 f6 = 6;
+}
