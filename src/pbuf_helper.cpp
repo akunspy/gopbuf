@@ -126,7 +126,7 @@ string GetFieldDefaultValueFromCPPType( const FieldDescriptor *fd ) {
             ss << "\"" << fd->default_value_string() << "\"";
         else if ( fd->type() == FieldDescriptor::TYPE_BYTES ) {
             if ( fd->has_default_value() )
-                ss << "StringToBytes( \"" << fd->default_value_string() << "\" )";
+                ss << "StringToBytes(\"" << fd->default_value_string() << "\")";
             else
                 ss << "nil";
         }

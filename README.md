@@ -8,13 +8,14 @@ a protobuf compiler for golang
 install protobuf first, from http://code.google.com/p/protobuf/downloads/list
 
 ```
+cd src
 make
 make install
 ```
 
 ## Test
 
-run these in console
+run these in shell
 ```
 cd example
 make

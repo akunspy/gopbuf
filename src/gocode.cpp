@@ -55,6 +55,7 @@ void GOBuilder::Build( const FileDescriptorList *filelist,
     sprintf( out_name, "%s.go", CS(this->package_name_) );
     this->out_file_ = fopen( out_name, "w" );
 
+    OutL( "//from gopbuf,  https://github.com/akunspy/gopbuf" );
     OutL( "package %s", CS(this->package_name_) );
     OutL( "%s", GO_CODE );
 
@@ -97,7 +98,6 @@ void GOBuilder::BuildMessage( const Descriptor *desc ) {
     BuildClear( desc );
     BuildByteSize( desc );
     BuildIsInitialized( desc );
-    BuildPrint( desc );
 }
 
 void GOBuilder::BuildMessageNew( const Descriptor *desc ) {
@@ -145,7 +145,12 @@ void GOBuilder::BuildSerialize( const Descriptor *desc ) {
 
     string msg_type_name = GetMessageTypeName( desc );
 
-    OutL( "func (p *%s) Serialize( b *ProtoBuffer ) error {", CS(msg_type_name) );
+    OutL( "func (p *%s) Serialize(b *ProtoBuffer) error {", CS(msg_type_name) );
+    OutL( "    b.ResetPos()" );
+    OutL( "    return p.do_serialize(b)" );
+    OutL( "}" );
+
+    OutL( "func (p *%s) do_serialize(b *ProtoBuffer) error {", CS(msg_type_name) );
     OutL( "    buf_size := len(b.buf) - b.pos" );
     OutL( "    byte_size := p.ByteSize()" );
     OutL( "    if byte_size > buf_size {" );
@@ -236,7 +241,7 @@ void GOBuilder::BuildFieldSerialize( const FieldDescriptor *fd, bool is_list ) {
     case FieldDescriptor::TYPE_MESSAGE:
         OutL( "        size := %s.ByteSize()", c_value_name );
         OutL( "        b.WriteInt32(int32(size))" );
-        OutL( "        %s.Serialize(b)", c_value_name );
+        OutL( "        %s.do_serialize(b)", c_value_name );
         break;
     default: printf( " BuildFieldSerialize error, type %d is invalid \n", fd->type() );
     }
@@ -349,8 +354,13 @@ void GOBuilder::BuildFieldByteSize( const FieldDescriptor *fd, bool is_list, con
 
 void GOBuilder::BuildParse( const Descriptor *desc ) {
     string msg_type_name = GetMessageTypeName( desc );
+
+    OutL( "func (p *%s) Parse(b *ProtoBuffer, msg_size int) error {", CS(msg_type_name) );
+    OutL( "    b.ResetPos()" );
+    OutL( "    return p.do_parse(b, msg_size)" );
+    OutL( "}" );
     
-    OutL( "func (p *%s) Parse( b *ProtoBuffer, msg_size int ) error {", CS(msg_type_name) );
+    OutL( "func (p *%s) do_parse(b *ProtoBuffer, msg_size int) error {", CS(msg_type_name) );
     OutL( "    msg_end := b.pos + msg_size" );
     OutL( "    if msg_end > len(b.buf) {" );
     OutL( "        return &ProtoError{\"Parse %s error, msg size out of buffer\"}", CS(msg_type_name) );
@@ -389,7 +399,7 @@ void GOBuilder::BuildParse( const Descriptor *desc ) {
     }
 
     //read unknow field
-    OutL( "        default: b.GetUnknowFieldValueSize( wire_tag )" );
+    OutL( "        default: b.GetUnknowFieldValueSize(wire_tag)" );
     OutL( "        }" );
     OutL( "    }\n" );
 
@@ -436,7 +446,7 @@ void GOBuilder::BuildSingularFieldParse( const FieldDescriptor *fd ) {
         OutL( "            %s_tmp := New%s()", c_value_name, CS(msg_type_name) );
         OutL( "            p.Set%s(%s_tmp)", c_value_name, c_value_name );
         OutL( "            if %s_size > 0 {", c_value_name );
-        OutL( "                e := p.%s.Parse( b, int(%s_size) )", c_value_name, c_value_name );
+        OutL( "                e := p.%s.do_parse(b, int(%s_size))", c_value_name, c_value_name );
         OutL( "                if e != nil {" );
         OutL( "                    return e" );
         OutL( "                }" );
@@ -479,9 +489,9 @@ void GOBuilder::BuildRepeatedFieldParse( const FieldDescriptor *fd ) {
         OutL( "                return &ProtoError{\"parse %s error\"}", CS(msg_type_name) );
         OutL( "            }" );
         OutL( "            %s_tmp := New%s()", c_value_name, CS(msg_type_name) );
-        OutL( "            p.Add%s( %s_tmp )", c_value_name, c_value_name );
+        OutL( "            p.Add%s(%s_tmp)", c_value_name, c_value_name );
         OutL( "            if %s_size > 0 {", c_value_name );
-        OutL( "                e := %s_tmp.Parse( b, int(%s_size) )", c_value_name, c_value_name );
+        OutL( "                e := %s_tmp.do_parse(b, int(%s_size))", c_value_name, c_value_name );
         OutL( "                if e != nil {" );
         OutL( "                    return e" );
         OutL( "                }" );
@@ -523,52 +533,6 @@ void GOBuilder::BuildIsInitialized( const Descriptor *desc ) {
     OutL( "}\n" );
     
     delete[] has_flag;
-}
-
-
-void GOBuilder::BuildPrint( const Descriptor *desc ) {
-    string msg_type_name = GetMessageTypeName( desc );
-    OutL( "func (p *%s) Print() {", CS(msg_type_name) );
-    if ( HasRepeated( desc ) ) 
-        OutL( "    list_count := 0" );
-
-    for ( int i = 0; i < desc->field_count(); i++ ) {
-        const FieldDescriptor *fd = desc->field( i );
-        const char *field_name = CS(fd->name());
-
-        if ( fd->is_repeated() ) {
-            OutL( "    fmt.Print(\"%s: \")", field_name );
-            OutL( "    list_count = p.Size%s()", field_name );
-            OutL( "    for i := 0; i < list_count; i++ {" );
-            BuildFieldPrint( fd, true );
-            OutL( "    }" );
-            OutL( "    fmt.Println()" );
-        } else {
-            OutL( "    if p.Has%s() {", field_name );
-            OutL( "        fmt.Print(\"%s: \")", field_name );
-            BuildFieldPrint( fd, false );
-            OutL( "        fmt.Println()" );
-            OutL( "    }" );
-        }
-    }
-
-    OutL( "}\n" );
-}
-
-void GOBuilder::BuildFieldPrint( const FieldDescriptor *fd, bool is_list ) {
-    string vn = GetFieldValueName(fd);
-    char c_value_name[255];
-    if ( is_list )
-        sprintf( c_value_name, "%s[i]", CS(vn) );
-    else
-        sprintf( c_value_name, "%s", CS(vn) );
-
-    if ( fd->type() == FieldDescriptor::TYPE_MESSAGE )
-        OutL( "        p.%s.Print()", c_value_name );
-    else if ( is_list )
-        OutL( "        fmt.Print(\"    \", p.%s)", c_value_name );
-    else
-        OutL( "        fmt.Print(p.%s)", c_value_name );
 }
 
 void GOBuilder::BuildField( const FieldDescriptor *fd, const string &msg_type_name ) {

@@ -59,7 +59,6 @@ func main() {
 	size := p.ByteSize()
 	newt := proto.NewTest()
 	for i := 0; i < 10; i++ {
-		buf.ResetPos()
 		e := newt.Parse(buf, size)
 		if e != nil {
 			fmt.Println(e)

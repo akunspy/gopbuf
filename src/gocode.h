@@ -31,9 +31,6 @@ private:
     void BuildClear( const Descriptor *desc );
     void BuildIsInitialized( const Descriptor *desc );
 
-    void BuildPrint( const Descriptor *desc );
-    void BuildFieldPrint( const FieldDescriptor *fd, bool is_list );
-    
     void BuildSerialize( const Descriptor *desc );
     void BuildFieldSerialize( const FieldDescriptor *fd, bool is_list );
 
