@@ -20,7 +20,7 @@ bin/main
 ```
 
 ## Benchmark
-Serialize/Parse a simple message on
+Serialize/Parse a simple message
 ```
 message Test {
     message Sub {
