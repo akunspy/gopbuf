@@ -1,5 +1,5 @@
-#ifndef _CODE_H_
-#define _CODE_H_
+#ifndef _GO_CODE_H_
+#define _GO_CODE_H_
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -44,11 +44,10 @@ private:
     void BuildByteSize( const Descriptor *desc );
     void BuildFieldByteSize( const FieldDescriptor *fd, bool is_list, const char *var_name );
 
-    void CopyFile( const char *filename );
     bool ProcessPackageName( const FileDescriptorList *filelist );
 
     FILE *out_file_;
     string package_name_;
 };
 
-#endif//_CODE_H_
+#endif//_GO_CODE_H_

@@ -7,14 +7,12 @@ debug: all
 	@mkdir -p ../bin
 	@echo "-------->  building  $(BIN)"
 	@g++ -Wall $(OBJS) -o ../bin/$(BIN) -lprotobuf
-	@cp pb.go ../bin/
 
 release: CCFLAGS=-O2 $(WOPT) 
 release: all
 	@mkdir -p ../bin
 	@echo "-------->  building  $(BIN)"
 	@g++ -Wall $(OBJS) -o ../bin/$(BIN) -lprotobuf
-	@cp pb.go ../bin/
 
 all: $(OBJS)
 $(OBJS): %.o: %.cpp
@@ -23,7 +21,6 @@ $(OBJS): %.o: %.cpp
 
 install:
 	@cp ../bin/gopbuf /usr/bin
-	@cp ../bin/pb.go /usr/bin
 
 .PHONY : clean 
 clean:

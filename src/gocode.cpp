@@ -1,4 +1,5 @@
 #include "gocode.h"
+#include "code.h"
 
 #define CS(str) (str).c_str()
 
@@ -10,19 +11,6 @@ GOBuilder::GOBuilder() {
 GOBuilder::~GOBuilder() {
     if ( NULL != out_file_ )
         fclose( out_file_ );
-}
-
-void GOBuilder::CopyFile( const char *filename ) {
-    char buf[1024];
-    FILE *fp = fopen( filename, "r" ); 
-    if ( fp == NULL ) {
-        printf( "open file: %s error\n", filename );
-        return;
-    }
-    while ( fgets( buf, 1024, fp ) ) 
-        Out( "%s", buf );
-    OutL( "" );
-    fclose( fp );
 }
 
 bool GOBuilder::ProcessPackageName( const FileDescriptorList *filelist ) {
@@ -68,7 +56,7 @@ void GOBuilder::Build( const FileDescriptorList *filelist,
     this->out_file_ = fopen( out_name, "w" );
 
     OutL( "package %s", CS(this->package_name_) );
-    CopyFile( "/usr/bin/pb.go" );
+    OutL( "%s", GO_CODE );
 
     //build message
     DescriptorList::const_iterator diter;
@@ -709,7 +697,7 @@ void GOBuilder::BuildClear( const Descriptor *desc ) {
 
 
 void GOBuilder::OutL( const char *fmt, ... ) {
-    const int MAX_LINE_SIZE = 1024;
+    const int MAX_LINE_SIZE = 10240;
     char buf[MAX_LINE_SIZE];
 
     va_list arg;
@@ -731,7 +719,7 @@ void GOBuilder::OutL( const char *fmt, ... ) {
 }
 
 void GOBuilder::Out( const char *fmt, ... ) {
-    const int MAX_LINE_SIZE = 1024;
+    const int MAX_LINE_SIZE = 10240;
     char buf[MAX_LINE_SIZE];
 
     va_list arg;
