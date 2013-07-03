@@ -9,8 +9,10 @@ CURDIR=`pwd`
 OLDGOPATH="$GOPATH"
 export GOPATH="$CURDIR":"$OLDGOPATH"
 go install main
+go test proto
 export GOPATH="$OLDGOPATH"
 
 if [ "$1" = "fmt" ]; then
     gofmt -w src
 fi
+
