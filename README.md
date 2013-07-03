@@ -8,7 +8,7 @@ a protobuf compiler for golang
 ```
 cd src
 make
-make install
+sudo make install
 ```
 
 ## Test
@@ -40,10 +40,10 @@ message Test {
 <table>
     <tr>
         <th>Benchmark</th>
-        <th>gopbuf</th>
-        <th>goprotobuf</th>
-        <th>protobuf(cpp)</th>
-        <th>protobuf(cpp +O3)</th>
+        <th><a href="https://github.com/akunspy/gopbuf">gopbuf</a></th>
+        <th><a href="http://code.google.com/p/goprotobuf/">goprotobuf</a></th>
+        <th><a href="http://code.google.com/p/protobuf/">protobuf(cpp)</a></th>
+        <th><a href="http://code.google.com/p/protobuf/">protobuf(cpp +O3)</a></th>
     </tr>
     <tr>
         <th>Serialize(1000000)</th>
