@@ -177,6 +177,9 @@ func NewProtoBuffer(len int) *ProtoBuffer {\n\
 	return buffer\n\
 }\n\
 \n\
+func (p *ProtoBuffer) GetBuffer() []byte {\n\
+	return p.buf\n\
+}\n\
 func (p *ProtoBuffer) AddPos(v int) {\n\
 	if v <= 0 {\n\
 		return\n\
