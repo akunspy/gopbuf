@@ -52,9 +52,8 @@ func main() {
 		p.Addf22(int32(i))
 	}
 
-	buf := proto.NewProtoBuffer(1000)
+	buf := make([]byte, 1000)
 	p.Serialize(buf)
-	buf.PrintBuffer()
 
 	size := p.ByteSize()
 	newt := proto.NewTest()

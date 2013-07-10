@@ -25,7 +25,7 @@ func Test_Message(t *testing.T) {
 		t.Error("Sub: test IsInitialized error")
 	}
 
-	buf := NewProtoBuffer(100)
+	buf := make([]byte, 100)
 	err := sub.Serialize(buf)
 	if err != nil {
 		t.Error("Sub: test Serialize error")

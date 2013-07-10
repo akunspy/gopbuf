@@ -170,16 +170,13 @@ type ProtoBuffer struct {\n\
 	pos int\n\
 }\n\
 \n\
-func NewProtoBuffer(len int) *ProtoBuffer {\n\
+func NewProtoBuffer(buf []byte) *ProtoBuffer {\n\
 	buffer := new(ProtoBuffer)\n\
-	buffer.buf = make([]byte, len)\n\
+	buffer.buf = buf\n\
 \n\
 	return buffer\n\
 }\n\
 \n\
-func (p *ProtoBuffer) GetBuffer() []byte {\n\
-	return p.buf\n\
-}\n\
 func (p *ProtoBuffer) AddPos(v int) {\n\
 	if v <= 0 {\n\
 		return\n\

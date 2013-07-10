@@ -145,8 +145,8 @@ void GOBuilder::BuildSerialize( const Descriptor *desc ) {
 
     string msg_type_name = GetMessageTypeName( desc );
 
-    OutL( "func (p *%s) Serialize(b *ProtoBuffer) error {", CS(msg_type_name) );
-    OutL( "    b.ResetPos()" );
+    OutL( "func (p *%s) Serialize(buf []byte) error {", CS(msg_type_name) );
+    OutL( "    b := NewProtoBuffer(buf)" );
     OutL( "    return p.do_serialize(b)" );
     OutL( "}" );
 
@@ -355,8 +355,8 @@ void GOBuilder::BuildFieldByteSize( const FieldDescriptor *fd, bool is_list, con
 void GOBuilder::BuildParse( const Descriptor *desc ) {
     string msg_type_name = GetMessageTypeName( desc );
 
-    OutL( "func (p *%s) Parse(b *ProtoBuffer, msg_size int) error {", CS(msg_type_name) );
-    OutL( "    b.ResetPos()" );
+    OutL( "func (p *%s) Parse(buf []byte, msg_size int) error {", CS(msg_type_name) );
+    OutL( "    b := NewProtoBuffer(buf)" );
     OutL( "    return p.do_parse(b, msg_size)" );
     OutL( "}" );
     
