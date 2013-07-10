@@ -449,8 +449,8 @@ func (e *ProtoError) Error() string {\n\
 \n\
 //proto interface\n\
 type Message interface {\n\
-	Serialize(b *ProtoBuffer) error\n\
-	Parse(b *ProtoBuffer, msg_size int) error\n\
+	Serialize(buf []byte) error\n\
+	Parse(buf []byte, msg_size int) error\n\
 	Clear()\n\
 	ByteSize() int\n\
 	IsInitialized() bool\n\
