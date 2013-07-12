@@ -145,9 +145,10 @@ void GOBuilder::BuildSerialize( const Descriptor *desc ) {
 
     string msg_type_name = GetMessageTypeName( desc );
 
-    OutL( "func (p *%s) Serialize(buf []byte) error {", CS(msg_type_name) );
+    OutL( "func (p *%s) Serialize(buf []byte) (size int, err error) {", CS(msg_type_name) );
     OutL( "    b := NewProtoBuffer(buf)" );
-    OutL( "    return p.do_serialize(b)" );
+    OutL( "    err = p.do_serialize(b)" );
+    OutL( "    return b.pos, err" );
     OutL( "}" );
 
     OutL( "func (p *%s) do_serialize(b *ProtoBuffer) error {", CS(msg_type_name) );

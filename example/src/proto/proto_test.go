@@ -26,7 +26,7 @@ func Test_Message(t *testing.T) {
 	}
 
 	buf := make([]byte, 100)
-	err := sub.Serialize(buf)
+	_, err := sub.Serialize(buf)
 	if err != nil {
 		t.Error("Sub: test Serialize error")
 	}
