@@ -7,7 +7,7 @@ FieldType field_types[] = {
     { FieldDescriptor::TYPE_FLOAT,   "float32", true,  WIRE_TYPE_32_BIT, "WriteFloat32",  "ReadFloat32" },
     { FieldDescriptor::TYPE_INT64,   "int64",   true,  WIRE_TYPE_VARINT, "WriteInt64",    "ReadInt64" },
     { FieldDescriptor::TYPE_UINT64,  "uint64",  true,  WIRE_TYPE_VARINT, "WriteUInt64",   "ReadUInt64" },
-    { FieldDescriptor::TYPE_INT32,   "int32",   true,  WIRE_TYPE_VARINT, "WriteInt32",    "ReadInt32" },
+    { FieldDescriptor::TYPE_INT32,   "int",   true,  WIRE_TYPE_VARINT, "WriteInt32",    "ReadInt32" },
     { FieldDescriptor::TYPE_FIXED64, "uint64",  true,  WIRE_TYPE_64BIT,  "WriteFixed64",  "ReadFixed64" },
     { FieldDescriptor::TYPE_FIXED32, "uint32",  true,  WIRE_TYPE_32_BIT, "WriteFixed32",  "ReadFixed32" },
     { FieldDescriptor::TYPE_BOOL,    "bool",    true,  WIRE_TYPE_VARINT, "WriteBoolean",  "ReadBoolean" },
@@ -17,9 +17,9 @@ FieldType field_types[] = {
     { FieldDescriptor::TYPE_BYTES,   "[]byte",  true,  WIRE_TYPE_LENGTH, "WriteBytes",    "ReadBytes" },
     { FieldDescriptor::TYPE_UINT32,  "uint32",  true,  WIRE_TYPE_VARINT, "WriteUInt32",   "ReadUInt32" },
     { FieldDescriptor::TYPE_ENUM,    "enum",    false, WIRE_TYPE_VARINT, "" },
-    { FieldDescriptor::TYPE_SFIXED32,"int32",   true,  WIRE_TYPE_32_BIT, "WriteSFixed32", "ReadSFixed32" },
+    { FieldDescriptor::TYPE_SFIXED32,"int",   true,  WIRE_TYPE_32_BIT, "WriteSFixed32", "ReadSFixed32" },
     { FieldDescriptor::TYPE_SFIXED64,"int64",   true,  WIRE_TYPE_64BIT,  "WriteSFixed64", "ReadSFixed64" },
-    { FieldDescriptor::TYPE_SINT32,  "int32",   true,  WIRE_TYPE_VARINT, "WriteSInt32",   "ReadSInt32" },
+    { FieldDescriptor::TYPE_SINT32,  "int",   true,  WIRE_TYPE_VARINT, "WriteSInt32",   "ReadSInt32" },
     { FieldDescriptor::TYPE_SINT64,  "int64",   true,  WIRE_TYPE_VARINT, "WriteSInt64",   "ReadSInt64" }
 };
 
@@ -90,7 +90,7 @@ string GetFieldTypeName( const FieldDescriptor *fd ) {
     if ( type->simple_type )
         return type->go_type_name;
     else if ( type->type == FieldDescriptor::TYPE_ENUM )
-        return "int32";
+        return "int";
     else if ( type->type == FieldDescriptor::TYPE_MESSAGE ) 
         return "*" + GetTypeName( fd->message_type()->full_name() );
     return "";

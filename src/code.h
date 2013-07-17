@@ -99,7 +99,7 @@ func Decode(buf []byte, index int) (x uint64, n int) {\n\
 	return x, n\n\
 }\n\
 \n\
-func Zigzag32(n int32) int32 {\n\
+func Zigzag32(n int) int {\n\
 	return (n << 1) ^ (n >> 31)\n\
 }\n\
 \n\
@@ -107,8 +107,8 @@ func Zigzag64(n int64) int64 {\n\
 	return (n << 1) ^ (n >> 63)\n\
 }\n\
 \n\
-func Dezigzag32(n int32) int32 {\n\
-	return (int32(n) >> 1) ^ -(n & 1)\n\
+func Dezigzag32(n int) int {\n\
+	return (n >> 1) ^ -(n & 1)\n\
 }\n\
 \n\
 func Dezigzag64(n int64) int64 {\n\
@@ -130,7 +130,7 @@ func BooleanToInt(b bool) int {\n\
 	}\n\
 }\n\
 \n\
-func WriteInt32Size(x int32) int {\n\
+func WriteInt32Size(x int) int {\n\
 	if x < 0 {\n\
 		return Encode64Size(uint64(x))\n\
 	} else {\n\
@@ -150,7 +150,7 @@ func WriteUInt64Size(x uint64) int {\n\
 	return Encode64Size(x)\n\
 }\n\
 \n\
-func WriteSInt32Size(x int32) int {\n\
+func WriteSInt32Size(x int) int {\n\
 	v := Zigzag32(x)\n\
 	return Encode32Size(uint32(v))\n\
 }\n\
@@ -200,8 +200,8 @@ func (p *ProtoBuffer) PrintBuffer() {\n\
 	fmt.Println()\n\
 }\n\
 \n\
-//int32\n\
-func (p *ProtoBuffer) WriteInt32(x int32) {\n\
+//int\n\
+func (p *ProtoBuffer) WriteInt32(x int) {\n\
 	if x < 0 {\n\
 		p.AddPos(Encode64(p.buf, p.pos, uint64(x)))\n\
 	} else {\n\
@@ -209,10 +209,10 @@ func (p *ProtoBuffer) WriteInt32(x int32) {\n\
 	}\n\
 }\n\
 \n\
-func (p *ProtoBuffer) ReadInt32() int32 {\n\
+func (p *ProtoBuffer) ReadInt32() int {\n\
 	x, n := Decode(p.buf, p.pos)\n\
 	p.AddPos(n)\n\
-	return int32(x)\n\
+	return int(x)\n\
 }\n\
 \n\
 //uint32\n\
@@ -249,12 +249,12 @@ func (p *ProtoBuffer) ReadUInt64() uint64 {\n\
 }\n\
 \n\
 //sint32\n\
-func (p *ProtoBuffer) WriteSInt32(x int32) {\n\
+func (p *ProtoBuffer) WriteSInt32(x int) {\n\
 	v := Zigzag32(x)\n\
 	p.WriteInt32(v)\n\
 }\n\
 \n\
-func (p *ProtoBuffer) ReadSInt32() int32 {\n\
+func (p *ProtoBuffer) ReadSInt32() int {\n\
 	v := p.ReadInt32()\n\
 	return Dezigzag32(v)\n\
 }\n\
@@ -271,12 +271,12 @@ func (p *ProtoBuffer) ReadSInt64() int64 {\n\
 }\n\
 \n\
 //sfixed32\n\
-func (p *ProtoBuffer) WriteSFixed32(x int32) {\n\
+func (p *ProtoBuffer) WriteSFixed32(x int) {\n\
 	p.WriteFixed32(uint32(x))\n\
 }\n\
 \n\
-func (p *ProtoBuffer) ReadSFixed32() int32 {\n\
-	return int32(p.ReadFixed32())\n\
+func (p *ProtoBuffer) ReadSFixed32() int {\n\
+	return int(p.ReadFixed32())\n\
 }\n\
 \n\
 //sfixed64\n\
@@ -420,7 +420,7 @@ func (p *ProtoBuffer) ReadBytes() []byte {\n\
 	return b\n\
 }\n\
 \n\
-func (p *ProtoBuffer) GetUnknowFieldValueSize(wire_tag int32) {\n\
+func (p *ProtoBuffer) GetUnknowFieldValueSize(wire_tag int) {\n\
 	wire_type := wire_tag & 0x7\n\
 \n\
 	switch wire_type {\n\

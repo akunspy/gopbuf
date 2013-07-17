@@ -32,7 +32,7 @@ func main() {
 	p.Setf17(b)
 
 	for i := 0; i < 5; i++ {
-		p.Addf18(int32(i))
+		p.Addf18(i)
 	}
 	p.Addf19(proto.Test_Type_Type3)
 	p.Addf19(proto.Test_Type_Type1)
@@ -40,16 +40,16 @@ func main() {
 	for i := 0; i < 6; i++ {
 		sub := proto.NewSub()
 		p.Addf20(sub)
-		sub.Setf1(int32(i*10 + 1))
-		sub.Setf2(int32(i*10 + 2))
-		sub.SetF3(int32(i*10 + 3))
+		sub.Setf1(i*10 + 1)
+		sub.Setf2(i*10 + 2)
+		sub.SetF3(i*10 + 3)
 	}
 
 	for i := 0; i < 3; i++ {
 		p.Addf21([]byte{0, 0, 0})
 	}
 	for i := 0; i < 5; i++ {
-		p.Addf22(int32(i))
+		p.Addf22(i)
 	}
 
 	buf := make([]byte, 1000)

@@ -173,13 +173,13 @@ void GOBuilder::BuildSerialize( const Descriptor *desc ) {
             if ( CanFieldNull( fd ) || wire_type != WIRE_TYPE_LENGTH ) {
                 //repeated field,tag + val
                 OutL( "    for i := 0; i < list_count; i++ {" );
-                OutL( "        b.WriteInt32(int32(%d))", wire_tag );
+                OutL( "        b.WriteInt32(%d)", wire_tag );
                 BuildFieldSerialize( fd, true );
                 OutL( "    }" );
             } else {
                 //repeated field,but packed=true
                 //write tag
-                OutL( "    b.WriteInt32(int32(%d))", wire_tag );
+                OutL( "    b.WriteInt32(%d)", wire_tag );
                 //write size
                 char name_buf[255];
                 sprintf( name_buf, "%s_buf_size", c_field_name );
@@ -188,7 +188,7 @@ void GOBuilder::BuildSerialize( const Descriptor *desc ) {
                 BuildFieldByteSize( fd, true, name_buf );
                 OutL( "    }" );
                 OutL( "    if %s > 0 {", name_buf );
-                OutL( "        b.WriteInt32(int32(%s))", name_buf );
+                OutL( "        b.WriteInt32(%s)", name_buf );
                 OutL( "    }" );
                 //write data
                 OutL( "    for i := 0; i < list_count; i++ {" );
@@ -198,7 +198,7 @@ void GOBuilder::BuildSerialize( const Descriptor *desc ) {
         } else {
             //single 
             OutL( "    if p.Has%s() {", c_field_name );
-            OutL( "        b.WriteInt32(int32(%d))", wire_tag );
+            OutL( "        b.WriteInt32(%d)", wire_tag );
             BuildFieldSerialize( fd, false );
             OutL( "    }" );
         }
@@ -237,11 +237,11 @@ void GOBuilder::BuildFieldSerialize( const FieldDescriptor *fd, bool is_list ) {
         OutL( "        b.%s(%s)", write_fun, c_value_name );
     } break;
     case FieldDescriptor::TYPE_ENUM:
-        OutL( "        b.WriteInt32(int32(%s))", c_value_name );
+        OutL( "        b.WriteInt32(%s)", c_value_name );
         break;
     case FieldDescriptor::TYPE_MESSAGE:
         OutL( "        size := %s.ByteSize()", c_value_name );
-        OutL( "        b.WriteInt32(int32(size))" );
+        OutL( "        b.WriteInt32(size)" );
         OutL( "        %s.do_serialize(b)", c_value_name );
         break;
     default: printf( " BuildFieldSerialize error, type %d is invalid \n", fd->type() );
@@ -274,25 +274,25 @@ void GOBuilder::BuildByteSize( const Descriptor *desc ) {
             if ( CanFieldNull( fd ) || wire_type != WIRE_TYPE_LENGTH ) {
                 //repeated field,tag + val
                 OutL( "    for i := 0; i < list_count; i++ {" );
-                OutL( "        p.cached_byte_size += WriteInt32Size(int32(%d))", wire_tag );
+                OutL( "        p.cached_byte_size += WriteInt32Size(%d)", wire_tag );
                 BuildFieldByteSize( fd, true, "p.cached_byte_size" );
                 OutL( "    }" );
             } else {
                 //repeated field,but packed=true
-                OutL( "    p.cached_byte_size += WriteInt32Size(int32(%d))", wire_tag );
+                OutL( "    p.cached_byte_size += WriteInt32Size(%d)", wire_tag );
                 OutL( "    %s_old_size := p.cached_byte_size", c_value_name );
                 OutL( "    for i := 0; i < list_count; i++ {" );
                 BuildFieldByteSize( fd, true, "p.cached_byte_size" );
                 OutL( "    }" );
                 //data size
                 OutL( "    if list_count > 0 {" );
-                OutL( "        p.cached_byte_size += WriteInt32Size(int32(p.cached_byte_size - %s_old_size))", c_value_name );
+                OutL( "        p.cached_byte_size += WriteInt32Size(p.cached_byte_size - %s_old_size)", c_value_name );
                 OutL( "    }" );
             }
         } else {
             //single 
             OutL( "    if p.Has%s() {", c_value_name );
-            OutL( "        p.cached_byte_size += WriteInt32Size(int32(%d))", wire_tag );
+            OutL( "        p.cached_byte_size += WriteInt32Size(%d)", wire_tag );
             BuildFieldByteSize( fd, false, "p.cached_byte_size" );
             OutL( "    }" );
         }
@@ -332,21 +332,21 @@ void GOBuilder::BuildFieldByteSize( const FieldDescriptor *fd, bool is_list, con
         OutL( "        %s += BooleanToInt(p.%s)", size_var_name, c_value_name );
         break;
     case FieldDescriptor::TYPE_ENUM:
-        OutL( "        %s += WriteInt32Size(int32(p.%s))", size_var_name, c_value_name );
+        OutL( "        %s += WriteInt32Size(p.%s)", size_var_name, c_value_name );
         break;
     case FieldDescriptor::TYPE_STRING:
         OutL( "        size := WriteStringSize(p.%s)", c_value_name );
-        OutL( "        %s += WriteInt32Size(int32(size))", size_var_name );
+        OutL( "        %s += WriteInt32Size(size)", size_var_name );
         OutL( "        %s += size", size_var_name );
         break;
     case FieldDescriptor::TYPE_MESSAGE:
         OutL( "        size := p.%s.ByteSize()", c_value_name );
-        OutL( "        %s += WriteInt32Size(int32(size))", size_var_name );
+        OutL( "        %s += WriteInt32Size(size)", size_var_name );
         OutL( "        %s += size", size_var_name );
         break;
     case FieldDescriptor::TYPE_BYTES:
         OutL( "        size := len(p.%s)", c_value_name );
-        OutL( "        %s += WriteInt32Size(int32(size))", size_var_name );
+        OutL( "        %s += WriteInt32Size(size)", size_var_name );
         OutL( "        %s += size", size_var_name );
         break;
     default: printf( " BuildFieldByteSize error, type %d is invalid \n", fd->type() );
@@ -382,11 +382,11 @@ void GOBuilder::BuildParse( const Descriptor *desc ) {
         if ( wire_type == WIRE_TYPE_LENGTH && !CanFieldNull(fd) && !IsString(fd) ) {
             //packed=true
             OutL( "            %s_size := b.ReadInt32()", field_name );
-            OutL( "            if %s_size > int32(msg_end-b.pos) || %s_size < 0 {", field_name, field_name );
+            OutL( "            if %s_size > msg_end-b.pos || %s_size < 0 {", field_name, field_name );
             OutL( "                return &ProtoError{\"Parse %s error\"}", CS(msg_type_name) );
             OutL( "            }" );
-            OutL( "            %s_end := int32(b.pos) + %s_size", field_name, field_name );
-            OutL( "            for int32(b.pos) < %s_end {", field_name );
+            OutL( "            %s_end := b.pos + %s_size", field_name, field_name );
+            OutL( "            for b.pos < %s_end {", field_name );
             BuildRepeatedFieldParse( fd );
             OutL( "            }" );
             //fix buf position
@@ -441,7 +441,7 @@ void GOBuilder::BuildSingularFieldParse( const FieldDescriptor *fd ) {
     case FieldDescriptor::TYPE_MESSAGE: {
         string msg_type_name = GetMessageTypeName( fd->message_type() );
         OutL( "            %s_size := b.ReadInt32()", c_value_name );
-        OutL( "            if %s_size > int32(msg_end-b.pos) {", c_value_name );
+        OutL( "            if %s_size > msg_end-b.pos {", c_value_name );
         OutL( "                return &ProtoError{\"parse %s error\"}", CS(msg_type_name) );
         OutL( "            }" );
         OutL( "            %s_tmp := New%s()", c_value_name, CS(msg_type_name) );
@@ -486,7 +486,7 @@ void GOBuilder::BuildRepeatedFieldParse( const FieldDescriptor *fd ) {
     case FieldDescriptor::TYPE_MESSAGE: {
         string msg_type_name = GetMessageTypeName( fd->message_type() );
         OutL( "            %s_size := b.ReadInt32()", c_value_name );
-        OutL( "            if %s_size > int32(msg_end-b.pos) {", c_value_name );
+        OutL( "            if %s_size > msg_end-b.pos {", c_value_name );
         OutL( "                return &ProtoError{\"parse %s error\"}", CS(msg_type_name) );
         OutL( "            }" );
         OutL( "            %s_tmp := New%s()", c_value_name, CS(msg_type_name) );
