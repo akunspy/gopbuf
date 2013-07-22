@@ -329,7 +329,7 @@ void GOBuilder::BuildFieldByteSize( const FieldDescriptor *fd, bool is_list, con
         OutL( "        %s += %sSize(p.%s)", size_var_name, write_fun, c_value_name );
     } break;
     case FieldDescriptor::TYPE_BOOL:
-        OutL( "        %s += BooleanToInt(p.%s)", size_var_name, c_value_name );
+        OutL( "        %s += WriteInt32Size(BooleanToInt(p.%s))", size_var_name, c_value_name );
         break;
     case FieldDescriptor::TYPE_ENUM:
         OutL( "        %s += WriteInt32Size(p.%s)", size_var_name, c_value_name );
