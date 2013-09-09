@@ -567,8 +567,12 @@ void GOBuilder::BuildSingularField( const FieldDescriptor *fd, const string &msg
     OutL( "func (p *%s) Set%s(v %s) {", c_msg_type_name, c_field_name, c_type_name );
     OutL( "    p.%s = v", c_value_name );
     if ( CanFieldNull( fd ) ) {
-        //nullable field
-        OutL( "    if v == nil {" );
+        if ( fd->type == FieldDescriptor::TYPE_STRING ) {
+            OutL( "    if v == \"\" {" );
+        } else {
+            //nullable field
+            OutL( "    if v == nil {" );
+        }
         OutL( "        p.has_flag_%d &= 0x%x", has_flag_index, ~bit_flag );
         OutL( "    } else {" );
         OutL( "        p.has_flag_%d |= 0x%x", has_flag_index, bit_flag );
