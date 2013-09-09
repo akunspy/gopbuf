@@ -63,6 +63,7 @@ bool FieldIsMessage( const FieldDescriptor *fd ) {
 bool CanFieldNull( const FieldDescriptor *fd ) {
     FieldType *type = GetFieldType( fd->type() );
     return type->type == FieldDescriptor::TYPE_MESSAGE ||
+        type->type == FieldDescriptor::TYPE_STRING ||
         type->type == FieldDescriptor::TYPE_BYTES;
 }
 
